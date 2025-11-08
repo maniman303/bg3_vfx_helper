@@ -1,7 +1,8 @@
 # BG3 VFX Helper
 
-Simple tool to automate head insertion into VFX files.
+Simple tool to automate Baldur's Gate 3 custom head insertion into VFX files.
 
+<img width="885" height="489" alt="obraz" src="https://github.com/user-attachments/assets/e38bc6fa-84a9-4eb4-89de-a3cd9e063f05" />
 
 ### TODO
 - Don't backup if nothing changes
@@ -19,3 +20,4 @@ Point it to the folder where you keep .lsx files. You can decompile them from [P
 Because it's simple and bloc takes time. If there will be a need to expand this tool, bloc will happen.
 
 [Xml icons created by IconMarketPK - Flaticon](https://www.flaticon.com/free-icons/xml)
+
