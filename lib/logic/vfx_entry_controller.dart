@@ -90,6 +90,14 @@ class VfxEntryController {
     await file.copy(backupFilePath);
   }
 
+  static Future<void> _backupFiles(List<File> files) async {
+    final backupDate = DateTime.now();
+
+    for (final file in files) {
+      await _backupFile(file, backupDate);
+    }
+  }
+
   static XmlElement _prepareXmlElement(int slotId, String customUUID) {
     final elem = XmlElement.tag(
       "node",
@@ -136,7 +144,13 @@ class VfxEntryController {
     return elem;
   }
 
-  static Future<void> _saveFile(List<VfxEntryModel> models, File file, DateTime saveDate) async {
+  static Future<void> _saveFile(File file, XmlDocument doc, DateTime saveDate) async {
+    final textData = doc.toXmlString(pretty: true, indent: '\t');
+
+    await file.writeAsString(textData, flush: true);
+  }
+
+  static Future<XmlDocument?> _prepFile(List<VfxEntryModel> models, File file) async {
     final input = await file.readAsString();
     final doc = XmlDocument.parse(input);
 
@@ -145,11 +159,11 @@ class VfxEntryController {
     final nodeElem = regionElem?.getElement("node");
     final childrenElem = nodeElem?.getElement("children");
 
-    if (childrenElem == null) {
-      return;
-    }
+    var res = false;
 
-    await _backupFile(file, saveDate);
+    if (childrenElem == null) {
+      return null;
+    }
 
     final slotId = _getSlotId(childrenElem);
 
@@ -162,23 +176,23 @@ class VfxEntryController {
         continue;
       }
 
+      res = true;
+
       final modelElem = _prepareXmlElement(slotId, model.customUUID);
 
       childrenElem.children.add(modelElem);
     }
 
-    final textData = doc.toXmlString(pretty: true, indent: '\t');
-
-    await file.writeAsString(textData, flush: true);
+    return res ? doc : null;
   }
 
-  static Future<bool> saveModels(List<VfxEntryModel> models, Directory dir) async {
+  static Future<int> _saveModels(List<VfxEntryModel> models, Directory dir) async {
     if (!await dir.exists()) {
-      return false;
+      return -1;
     }
 
     if (!validateModels(models)) {
-      return false;
+      return -1;
     }
 
     final saveDate = DateTime.now();
@@ -189,21 +203,44 @@ class VfxEntryController {
         .where((file) => file.path.toLowerCase().endsWith('.lsx'))
         .toList();
 
+    final filesToSave = <File, XmlDocument>{};
+
     for (final file in files) {
-      await _saveFile(models, file, saveDate);
+      final doc = await _prepFile(models, file);
+
+      if (doc == null) {
+        continue;
+      }
+
+      filesToSave[file] = doc;
     }
 
-    return true;
+    if (filesToSave.isEmpty) {
+      return 0;
+    }
+
+    await _backupFiles(files);
+
+    for (final entry in filesToSave.entries) {
+      await _saveFile(entry.key, entry.value, saveDate);
+    }
+
+    return filesToSave.length;
   }
 
-  static Future<bool> saveModelsOnIsolate(List<VfxEntryModel> models, Directory dir) async {
+  static Future<int> saveModels(List<VfxEntryModel> models, Directory dir) async {
     final jsonModels = jsonEncode(models.map((e) => e.toMap()).toList());
 
     final saveRes = await Isolate.run(() async {
       final plainModels = jsonDecode(jsonModels) as List;
       final models = plainModels.cast<Map>().map((e) => VfxEntryModel.fromMap(e)).toList();
 
-      return await saveModels(models, dir);
+      try {
+        return await _saveModels(models, dir);
+      } catch (_) {
+        // TODO: Log this when logging is done
+        return -1;
+      }
     }, debugName: "saving-isolate");
 
     return saveRes;

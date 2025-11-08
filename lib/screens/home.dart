@@ -94,7 +94,7 @@ class _HomeState extends State<Home> {
 
     showDialog(context: context, barrierDismissible: false, builder: (context) => SaveDialog());
 
-    final saveRes = await VfxEntryController.saveModelsOnIsolate(_entryList, lsxDirectory);
+    final saveRes = await VfxEntryController.saveModels(_entryList, lsxDirectory);
 
     if (!mounted) {
       return;
@@ -102,8 +102,10 @@ class _HomeState extends State<Home> {
 
     Navigator.of(context).pop();
 
-    if (saveRes) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Save succeeded.")));
+    if (saveRes > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Saved $saveRes files.")));
+    } else if (saveRes == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Nothing to save.")));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Save failed.")));
     }

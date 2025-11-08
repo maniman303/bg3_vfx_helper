@@ -38,8 +38,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = context.watch<CustomChangeNotifier<ThemeMode>>();
-    final lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.tealAccent);
-    final darkColorScheme = ColorScheme.fromSeed(seedColor: Colors.teal, brightness: Brightness.dark);
+    final lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blueAccent);
+    final darkColorScheme = ColorScheme.fromSeed(seedColor: Colors.blueAccent, brightness: Brightness.dark);
 
     return MaterialApp(
       title: 'BG3 VFX Helper',
