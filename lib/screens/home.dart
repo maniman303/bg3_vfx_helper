@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bg3_vfx_helper/bloc/theme/theme_bloc.dart';
 import 'package:bg3_vfx_helper/components/button_separator.dart';
 import 'package:bg3_vfx_helper/components/last_wrap.dart';
 import 'package:bg3_vfx_helper/components/list_header.dart';
@@ -8,7 +9,6 @@ import 'package:bg3_vfx_helper/components/mako_about_dialog.dart';
 import 'package:bg3_vfx_helper/components/material_path_field.dart';
 import 'package:bg3_vfx_helper/components/save_dialog.dart';
 import 'package:bg3_vfx_helper/components/vfx_entry_field.dart';
-import 'package:bg3_vfx_helper/helpers/custom_change_notifier.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_controller.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,8 @@ import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
+
+  static const String routeName = "/";
 
   @override
   State<Home> createState() => _HomeState();
@@ -29,12 +31,14 @@ class _HomeState extends State<Home> {
   String? _lsxPathError;
 
   void _onThemeSwitch(bool value) {
-    final themeNotifier = context.read<CustomChangeNotifier<ThemeMode>>();
+    final themeNotifier = context.read<ThemeBloc>();
 
-    if (themeNotifier.value == ThemeMode.system) {
-      themeNotifier.set(Theme.brightnessOf(context) == Brightness.dark ? ThemeMode.light : ThemeMode.dark);
+    if (themeNotifier.state.selectedTheme == ThemeMode.system) {
+      themeNotifier.changeTheme(
+        Theme.brightnessOf(context) == Brightness.dark ? ThemeMode.light : ThemeMode.dark,
+      );
     } else {
-      themeNotifier.set(ThemeMode.system);
+      themeNotifier.changeTheme(ThemeMode.system);
     }
   }
 

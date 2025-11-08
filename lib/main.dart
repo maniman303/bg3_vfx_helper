@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:bg3_vfx_helper/helpers/custom_change_notifier.dart';
+import 'package:bg3_vfx_helper/bloc/theme/theme_bloc.dart';
 import 'package:bg3_vfx_helper/looks/no_transition_builder.dart';
 import 'package:bg3_vfx_helper/screens/home.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -26,7 +26,10 @@ void main() async {
   }
 
   runApp(
-    ChangeNotifierProvider(create: (_) => CustomChangeNotifier(ThemeMode.system), child: const MainApp()),
+    MultiBlocProvider(
+      providers: [BlocProvider<ThemeBloc>(lazy: false, create: (_) => ThemeBloc())],
+      child: const MainApp(),
+    ),
   );
 }
 
@@ -37,7 +40,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = context.watch<CustomChangeNotifier<ThemeMode>>();
+    final themeNotifier = context.watch<ThemeBloc>();
     final lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blueAccent);
     final darkColorScheme = ColorScheme.fromSeed(seedColor: Colors.blueAccent, brightness: Brightness.dark);
 
@@ -93,8 +96,9 @@ class MainApp extends StatelessWidget {
         ),
       ),
       scrollBehavior: const MaterialScrollBehavior().copyWith(scrollbars: false),
-      themeMode: themeNotifier.value,
-      home: Home(),
+      themeMode: themeNotifier.state.selectedTheme,
+      routes: {Home.routeName: (context) => const Home()},
+      initialRoute: Home.routeName,
     );
   }
 }
