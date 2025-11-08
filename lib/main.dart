@@ -1,0 +1,100 @@
+import 'dart:io';
+
+import 'package:bg3_vfx_helper/helpers/custom_change_notifier.dart';
+import 'package:bg3_vfx_helper/looks/no_transition_builder.dart';
+import 'package:bg3_vfx_helper/screens/home.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isWindows) {
+    await windowManager.ensureInitialized();
+
+    final windowOptions = WindowOptions(
+      title: "BG3 VFX Helper",
+      minimumSize: Size(570, 350),
+      size: Size(900, 500),
+    );
+
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
+  runApp(
+    ChangeNotifierProvider(create: (_) => CustomChangeNotifier(ThemeMode.system), child: const MainApp()),
+  );
+}
+
+final routeObserver = RouteObserver<PageRoute>();
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = context.watch<CustomChangeNotifier<ThemeMode>>();
+    final lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.tealAccent);
+    final darkColorScheme = ColorScheme.fromSeed(seedColor: Colors.teal, brightness: Brightness.dark);
+
+    return MaterialApp(
+      title: 'BG3 VFX Helper',
+      navigatorObservers: [routeObserver],
+      theme: ThemeData(
+        colorScheme: lightColorScheme,
+        snackBarTheme: SnackBarThemeData(
+          showCloseIcon: true,
+          behavior: SnackBarBehavior.floating,
+          width: 400,
+          insetPadding: const EdgeInsets.all(12.0),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          floatingLabelStyle: TextStyle(fontWeight: FontWeight.w500),
+          filled: true,
+          fillColor: lightColorScheme.surface,
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        ),
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {TargetPlatform.windows: const NoTransitionsBuilder()},
+        ),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: darkColorScheme,
+        snackBarTheme: SnackBarThemeData(
+          showCloseIcon: true,
+          behavior: SnackBarBehavior.floating,
+          width: 400,
+          insetPadding: const EdgeInsets.all(12.0),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          floatingLabelStyle: TextStyle(fontWeight: FontWeight.w500),
+          filled: true,
+          fillColor: darkColorScheme.surface,
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        ),
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {TargetPlatform.windows: const NoTransitionsBuilder()},
+        ),
+      ),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(scrollbars: false),
+      themeMode: themeNotifier.value,
+      home: Home(),
+    );
+  }
+}
