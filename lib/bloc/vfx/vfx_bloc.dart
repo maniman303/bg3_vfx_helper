@@ -2,6 +2,7 @@ import 'package:bg3_vfx_helper/bloc/locked_bloc.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_add_model.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_remove_model.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_save.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_set_comment.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_set_lsx_path.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_set_uuid.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
@@ -30,6 +31,8 @@ class VfxBloc extends LockedBloc<VfxEvent, VfxState> {
 
     on<VfxEventSetLsxPath>((event, emit) => lockedRun(event, emit, VfxHandlerSetLsxPath.onSetLsxPath));
 
+    on<VfxEventSetComment>((event, emit) => lockedRun(event, emit, VfxHandlerSetComment.onSetComment));
+
     on<VfxEventSetVanillaUUID>(
       (event, emit) => lockedRun(event, emit, VfxHandlerSetModelUUID.onSetVanillaUUID),
     );
@@ -51,6 +54,10 @@ class VfxBloc extends LockedBloc<VfxEvent, VfxState> {
 
   void setLsxPath(String lsxPath) {
     add(VfxEventSetLsxPath(lsxPath: lsxPath));
+  }
+
+  void setComment(String comment) {
+    add(VfxEventSetComment(comment: comment));
   }
 
   void setVanillaUUID(String id, String uuid) {
