@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:bg3_vfx_helper/helpers/string_helper.dart';
+import 'package:bg3_vfx_helper/logic/logger.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
 import 'package:uuid/v4.dart';
 import 'package:xml/xml.dart';
@@ -191,11 +192,15 @@ class VfxEntryController {
   }
 
   static Future<int> _saveModels(List<VfxEntryModel> models, String comment, Directory dir) async {
+    Logger.info("Save started.");
+
     if (!await dir.exists()) {
+      Logger.error("Lsx files directory does not exist.");
       return -1;
     }
 
     if (!validateModels(models)) {
+      Logger.error("Models contain errors.");
       return -1;
     }
 
@@ -226,6 +231,7 @@ class VfxEntryController {
     }
 
     if (filesToSave.isEmpty) {
+      Logger.info("Save finished. Nothing to save.");
       return 0;
     }
 
@@ -240,6 +246,8 @@ class VfxEntryController {
 
       await _saveFile(file, doc);
     }
+
+    Logger.info("Save finished. Saved ${filesToSave.length} files.");
 
     return filesToSave.length;
   }

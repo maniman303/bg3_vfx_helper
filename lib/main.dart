@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bg3_vfx_helper/bloc/theme/theme_bloc.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
+import 'package:bg3_vfx_helper/logic/logger.dart';
 import 'package:bg3_vfx_helper/looks/no_transition_builder.dart';
 import 'package:bg3_vfx_helper/screens/home.dart';
 import 'package:bg3_vfx_helper/screens/licenses.dart';
@@ -11,6 +12,9 @@ import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  Logger.initialize("bg3_vfx_helper");
+  Logger.info("BG3 VFX Helper");
 
   if (Platform.isWindows) {
     await windowManager.ensureInitialized();

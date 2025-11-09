@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
 import 'package:bg3_vfx_helper/helpers/canceler.dart';
+import 'package:bg3_vfx_helper/logic/logger.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_controller.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,6 +47,8 @@ class VfxHandlerSave {
     Canceler canceler,
   ) async {
     String? lsxPathError;
+
+    Logger.debug("Received save event");
 
     final lsxPath = state.lsxPath;
     final lsxDirectory = Directory(lsxPath);
