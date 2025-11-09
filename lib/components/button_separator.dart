@@ -9,7 +9,7 @@ class ButtonSeparator extends StatelessWidget {
       width: 1.5,
       height: 24,
       decoration: BoxDecoration(
-        color: Theme.of(context).dividerColor.withValues(alpha: 0.75),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
         borderRadius: BorderRadius.circular(20),
       ),
     );

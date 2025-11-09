@@ -4,6 +4,7 @@ import 'package:bg3_vfx_helper/bloc/theme/theme_bloc.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
 import 'package:bg3_vfx_helper/looks/no_transition_builder.dart';
 import 'package:bg3_vfx_helper/screens/home.dart';
+import 'package:bg3_vfx_helper/screens/licenses.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:window_manager/window_manager.dart';
@@ -71,6 +72,7 @@ class MainApp extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
           ),
         ),
+        dividerColor: Colors.transparent,
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {TargetPlatform.windows: const NoTransitionsBuilder()},
         ),
@@ -95,13 +97,14 @@ class MainApp extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
           ),
         ),
+        dividerColor: Colors.transparent,
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {TargetPlatform.windows: const NoTransitionsBuilder()},
         ),
       ),
       scrollBehavior: const MaterialScrollBehavior().copyWith(scrollbars: false),
       themeMode: themeNotifier.state.selectedTheme,
-      routes: {Home.routeName: (context) => const Home()},
+      routes: {Home.routeName: (context) => const Home(), Licenses.routeName: (context) => const Licenses()},
       initialRoute: Home.routeName,
     );
   }
