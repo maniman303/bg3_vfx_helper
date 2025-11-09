@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -144,7 +143,7 @@ class VfxEntryController {
     return elem;
   }
 
-  static Future<void> _saveFile(File file, XmlDocument doc, DateTime saveDate) async {
+  static Future<void> _saveFile(File file, XmlDocument doc) async {
     final textData = doc.toXmlString(pretty: true, indent: '\t');
 
     await file.writeAsString(textData, flush: true);
@@ -195,13 +194,19 @@ class VfxEntryController {
       return -1;
     }
 
-    final saveDate = DateTime.now();
+    final files = <File>[];
 
-    final files = dir
-        .listSync(followLinks: false)
-        .whereType<File>()
-        .where((file) => file.path.toLowerCase().endsWith('.lsx'))
-        .toList();
+    await for (final file in dir.list(followLinks: false)) {
+      if (file is! File) {
+        continue;
+      }
+
+      if (!file.path.toLowerCase().endsWith('.lsx')) {
+        continue;
+      }
+
+      files.add(file);
+    }
 
     final filesToSave = <File, XmlDocument>{};
 
@@ -222,19 +227,14 @@ class VfxEntryController {
     await _backupFiles(files);
 
     for (final entry in filesToSave.entries) {
-      await _saveFile(entry.key, entry.value, saveDate);
+      await _saveFile(entry.key, entry.value);
     }
 
     return filesToSave.length;
   }
 
   static Future<int> saveModels(List<VfxEntryModel> models, Directory dir) async {
-    final jsonModels = jsonEncode(models.map((e) => e.toMap()).toList());
-
     final saveRes = await Isolate.run(() async {
-      final plainModels = jsonDecode(jsonModels) as List;
-      final models = plainModels.cast<Map>().map((e) => VfxEntryModel.fromMap(e)).toList();
-
       try {
         return await _saveModels(models, dir);
       } catch (_) {
