@@ -208,7 +208,7 @@ class VfxEntryController {
       files.add(file);
     }
 
-    final filesToSave = <File, XmlDocument>{};
+    final filesToSave = <File>{};
 
     for (final file in files) {
       final doc = await _prepFile(models, file);
@@ -217,7 +217,7 @@ class VfxEntryController {
         continue;
       }
 
-      filesToSave[file] = doc;
+      filesToSave.add(file);
     }
 
     if (filesToSave.isEmpty) {
@@ -226,8 +226,14 @@ class VfxEntryController {
 
     await _backupFiles(files);
 
-    for (final entry in filesToSave.entries) {
-      await _saveFile(entry.key, entry.value);
+    for (final file in filesToSave) {
+      final doc = await _prepFile(models, file);
+
+      if (doc == null) {
+        continue;
+      }
+
+      await _saveFile(file, doc);
     }
 
     return filesToSave.length;
