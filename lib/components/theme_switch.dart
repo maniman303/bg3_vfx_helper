@@ -7,13 +7,19 @@ class ThemeSwitch extends StatelessWidget {
 
   void _onThemeSwitch(BuildContext context, bool value) {
     final themeBloc = context.read<ThemeBloc>();
+    final expectedTheme = Theme.brightnessOf(context) == Brightness.dark ? ThemeMode.light : ThemeMode.dark;
 
     if (themeBloc.state.selectedTheme == ThemeMode.system) {
-      themeBloc.changeTheme(
-        Theme.brightnessOf(context) == Brightness.dark ? ThemeMode.light : ThemeMode.dark,
-      );
+      themeBloc.changeTheme(expectedTheme);
     } else {
-      themeBloc.changeTheme(ThemeMode.system);
+      final systemBrightness = MediaQuery.of(context).platformBrightness;
+
+      if ((systemBrightness == Brightness.light && expectedTheme == ThemeMode.light) ||
+          (systemBrightness == Brightness.dark && expectedTheme == ThemeMode.dark)) {
+        themeBloc.changeTheme(ThemeMode.system);
+      } else {
+        themeBloc.changeTheme(expectedTheme);
+      }
     }
   }
 
