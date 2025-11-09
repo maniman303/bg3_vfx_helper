@@ -244,6 +244,8 @@ class VfxEntryController {
         continue;
       }
 
+      Logger.info("Modifying file at '${file.path}'.");
+
       await _saveFile(file, doc);
     }
 
@@ -256,8 +258,8 @@ class VfxEntryController {
     final saveRes = await Isolate.run(() async {
       try {
         return await _saveModels(models, comment, dir);
-      } catch (_) {
-        // TODO: Log this when logging is done
+      } catch (e, stack) {
+        Logger.error("Encountered exception ${e.runtimeType} during saving.\nStack trace: $stack");
         return -1;
       }
     }, debugName: "saving-isolate");
