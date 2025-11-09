@@ -1,5 +1,6 @@
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
 import 'package:bg3_vfx_helper/components/button_separator.dart';
+import 'package:bg3_vfx_helper/components/comment_entry_field.dart';
 import 'package:bg3_vfx_helper/components/last_wrap.dart';
 import 'package:bg3_vfx_helper/components/list_header.dart';
 import 'package:bg3_vfx_helper/components/lockable_buttons.dart';
@@ -79,7 +80,13 @@ class _HomeState extends State<Home> {
                       constraints: BoxConstraints(maxWidth: 730),
                       child: VfxEntryList(
                         scrollController: _scrollController,
-                        headers: [ListHeader("Settings"), MaterialPathField(), ListHeader("Entries")],
+                        headers: [
+                          ListHeader("Settings"),
+                          MaterialPathField(),
+                          SizedBox(height: 8),
+                          CommentEntryField(),
+                          ListHeader("Entries"),
+                        ],
                       ),
                     ),
                   ),
