@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class VfxEventAddModel extends VfxEvent {}
 
 class VfxStateAddModel extends VfxState {
-  VfxStateAddModel({required super.lsxPath, required super.models});
+  VfxStateAddModel({required super.lsxPath, required super.comment, required super.models});
 }
 
 class VfxHandlerAddModel {
@@ -19,6 +19,6 @@ class VfxHandlerAddModel {
     final models = List<VfxEntryModel>.from(state.models);
     models.add(VfxEntryModel());
 
-    emit(VfxStateAddModel(lsxPath: state.lsxPath, models: List.unmodifiable(models)));
+    emit(VfxStateAddModel(lsxPath: state.lsxPath, comment: state.comment, models: List.unmodifiable(models)));
   }
 }

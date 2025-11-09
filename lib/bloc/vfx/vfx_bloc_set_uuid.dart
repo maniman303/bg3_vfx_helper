@@ -17,7 +17,7 @@ class VfxEventSetCustomUUID extends VfxEvent {
 }
 
 class VfxStateSetModelUUID extends VfxState {
-  const VfxStateSetModelUUID({required super.lsxPath, required super.models});
+  const VfxStateSetModelUUID({required super.lsxPath, required super.comment, required super.models});
 }
 
 class VfxHandlerSetModelUUID {
@@ -36,7 +36,7 @@ class VfxHandlerSetModelUUID {
     model.vanillaUUID = event.uuid;
     model.vanillaError = null;
 
-    emit(VfxStateSetModelUUID(lsxPath: state.lsxPath, models: state.models));
+    emit(VfxStateSetModelUUID(lsxPath: state.lsxPath, comment: state.comment, models: state.models));
   }
 
   static Future<void> onSetCustomUUID(
@@ -54,6 +54,12 @@ class VfxHandlerSetModelUUID {
     model.customUUID = event.uuid;
     model.customError = null;
 
-    emit(VfxStateSetModelUUID(lsxPath: state.lsxPath, models: state.models));
+    emit(
+      VfxStateSetModelUUID(
+        lsxPath: state.lsxPath,
+        comment: state.comment,
+        models: List.unmodifiable(state.models),
+      ),
+    );
   }
 }

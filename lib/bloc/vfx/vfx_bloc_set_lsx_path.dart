@@ -9,7 +9,7 @@ class VfxEventSetLsxPath extends VfxEvent {
 }
 
 class VfxStateSetLsxPath extends VfxState {
-  VfxStateSetLsxPath({required super.lsxPath, required super.models});
+  VfxStateSetLsxPath({required super.lsxPath, required super.comment, required super.models});
 }
 
 class VfxHandlerSetLsxPath {
@@ -27,6 +27,12 @@ class VfxHandlerSetLsxPath {
       return;
     }
 
-    emit(VfxStateSetLsxPath(lsxPath: event.lsxPath, models: state.models));
+    emit(
+      VfxStateSetLsxPath(
+        lsxPath: event.lsxPath,
+        comment: state.comment,
+        models: List.unmodifiable(state.models),
+      ),
+    );
   }
 }

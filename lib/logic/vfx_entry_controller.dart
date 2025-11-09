@@ -177,6 +177,8 @@ class VfxEntryController {
 
       res = true;
 
+      // childrenElem.children.add(XmlComment(value))
+
       final modelElem = _prepareXmlElement(slotId, model.customUUID);
 
       childrenElem.children.add(modelElem);

@@ -10,7 +10,7 @@ class VfxEventRemoveModel extends VfxEvent {
 }
 
 class VfxStateRemoveModel extends VfxState {
-  VfxStateRemoveModel({required super.lsxPath, required super.models});
+  VfxStateRemoveModel({required super.lsxPath, required super.comment, required super.models});
 }
 
 class VfxHandlerRemoveModel {
@@ -28,6 +28,8 @@ class VfxHandlerRemoveModel {
 
     models.removeWhere((m) => m.id == event.id);
 
-    emit(VfxStateRemoveModel(lsxPath: state.lsxPath, models: List.unmodifiable(models)));
+    emit(
+      VfxStateRemoveModel(lsxPath: state.lsxPath, comment: state.comment, models: List.unmodifiable(models)),
+    );
   }
 }

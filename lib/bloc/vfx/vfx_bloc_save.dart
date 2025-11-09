@@ -11,21 +11,31 @@ class VfxEventSave extends VfxEvent {}
 class VfxStateFailedValidation extends VfxState {
   final String? lsxPathError;
 
-  const VfxStateFailedValidation({required super.lsxPath, required super.models, required this.lsxPathError});
+  const VfxStateFailedValidation({
+    required super.lsxPath,
+    required super.comment,
+    required super.models,
+    required this.lsxPathError,
+  });
 }
 
 class VfxStateEmptyModels extends VfxState {
-  const VfxStateEmptyModels({required super.lsxPath, required super.models});
+  const VfxStateEmptyModels({required super.lsxPath, required super.comment, required super.models});
 }
 
 class VfxStateSavingInProgress extends VfxState {
-  const VfxStateSavingInProgress({required super.lsxPath, required super.models});
+  const VfxStateSavingInProgress({required super.lsxPath, required super.comment, required super.models});
 }
 
 class VfxStateSaveCompleted extends VfxState {
   final int filesSaved;
 
-  const VfxStateSaveCompleted({required super.lsxPath, required super.models, required this.filesSaved});
+  const VfxStateSaveCompleted({
+    required super.lsxPath,
+    required super.comment,
+    required super.models,
+    required this.filesSaved,
+  });
 }
 
 class VfxHandlerSave {
@@ -50,6 +60,7 @@ class VfxHandlerSave {
       emit(
         VfxStateFailedValidation(
           lsxPath: lsxPath,
+          comment: state.comment,
           models: List.unmodifiable(models),
           lsxPathError: lsxPathError,
         ),
@@ -59,15 +70,24 @@ class VfxHandlerSave {
     }
 
     if (models.isEmpty) {
-      emit(VfxStateEmptyModels(lsxPath: lsxPath, models: List.unmodifiable(models)));
+      emit(VfxStateEmptyModels(lsxPath: lsxPath, comment: state.comment, models: List.unmodifiable(models)));
 
       return;
     }
 
-    emit(VfxStateSavingInProgress(lsxPath: lsxPath, models: List.unmodifiable(models)));
+    emit(
+      VfxStateSavingInProgress(lsxPath: lsxPath, comment: state.comment, models: List.unmodifiable(models)),
+    );
 
     final saveRes = await VfxEntryController.saveModels(models, lsxDirectory);
 
-    emit(VfxStateSaveCompleted(lsxPath: lsxPath, models: List.unmodifiable(models), filesSaved: saveRes));
+    emit(
+      VfxStateSaveCompleted(
+        lsxPath: lsxPath,
+        comment: state.comment,
+        models: List.unmodifiable(models),
+        filesSaved: saveRes,
+      ),
+    );
   }
 }

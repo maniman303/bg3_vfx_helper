@@ -12,13 +12,14 @@ class VfxEvent {
 
 class VfxState {
   final String lsxPath;
+  final String comment;
   final List<VfxEntryModel> models;
 
-  const VfxState({required this.lsxPath, required this.models});
+  const VfxState({required this.lsxPath, required this.comment, required this.models});
 }
 
 class VfxBloc extends LockedBloc<VfxEvent, VfxState> {
-  VfxBloc() : super(VfxState(lsxPath: "", models: [VfxEntryModel()])) {
+  VfxBloc() : super(VfxState(lsxPath: "", comment: "", models: [VfxEntryModel()])) {
     on<VfxEventAddModel>(
       (event, emit) => lockedRun(event, emit, VfxHandlerAddModel.onAddModel, type: "models"),
     );
