@@ -79,7 +79,7 @@ class VfxHandlerSave {
       VfxStateSavingInProgress(lsxPath: lsxPath, comment: state.comment, models: List.unmodifiable(models)),
     );
 
-    final saveRes = await VfxEntryController.saveModels(models, lsxDirectory);
+    final saveRes = await VfxEntryController.saveModels(models, state.comment, lsxDirectory);
 
     emit(
       VfxStateSaveCompleted(

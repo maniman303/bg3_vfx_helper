@@ -10,8 +10,11 @@ class MakoAboutDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('About'),
-      content: const Text(
-        'The tool loads all .lsx files from the selected Material Group directory.\nFor any file that already contains entries with vanilla head UUIDs, it inserts the custom head entries if they are not already present.',
+      content: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 500),
+        child: const Text(
+          'The tool loads all .lsx files from the selected Material Group directory.\nFor any file that already contains entries with vanilla head UUIDs, it inserts the custom head entries if they are not already present.\nIf comment is filled, it will be added before new entries.',
+        ),
       ),
       actions: [
         LockableTextButton(

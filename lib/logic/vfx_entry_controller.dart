@@ -149,7 +149,7 @@ class VfxEntryController {
     await file.writeAsString(textData, flush: true);
   }
 
-  static Future<XmlDocument?> _prepFile(List<VfxEntryModel> models, File file) async {
+  static Future<XmlDocument?> _prepFile(List<VfxEntryModel> models, String comment, File file) async {
     final input = await file.readAsString();
     final doc = XmlDocument.parse(input);
 
@@ -158,13 +158,12 @@ class VfxEntryController {
     final nodeElem = regionElem?.getElement("node");
     final childrenElem = nodeElem?.getElement("children");
 
-    var res = false;
-
     if (childrenElem == null) {
       return null;
     }
 
     final slotId = _getSlotId(childrenElem);
+    final elemsToAdd = <XmlElement>[];
 
     for (final model in models) {
       if (!_containsVisualResource(childrenElem, model.vanillaUUID)) {
@@ -175,19 +174,23 @@ class VfxEntryController {
         continue;
       }
 
-      res = true;
-
-      // childrenElem.children.add(XmlComment(value))
-
-      final modelElem = _prepareXmlElement(slotId, model.customUUID);
-
-      childrenElem.children.add(modelElem);
+      elemsToAdd.add(_prepareXmlElement(slotId, model.customUUID));
     }
 
-    return res ? doc : null;
+    if (elemsToAdd.isEmpty) {
+      return null;
+    }
+
+    if (!StringHelper.isNullOrWhitespace(comment)) {
+      childrenElem.children.add(XmlComment(" $comment "));
+    }
+
+    childrenElem.children.addAll(elemsToAdd);
+
+    return elemsToAdd.isEmpty ? null : doc;
   }
 
-  static Future<int> _saveModels(List<VfxEntryModel> models, Directory dir) async {
+  static Future<int> _saveModels(List<VfxEntryModel> models, String comment, Directory dir) async {
     if (!await dir.exists()) {
       return -1;
     }
@@ -213,7 +216,7 @@ class VfxEntryController {
     final filesToSave = <File>{};
 
     for (final file in files) {
-      final doc = await _prepFile(models, file);
+      final doc = await _prepFile(models, comment, file);
 
       if (doc == null) {
         continue;
@@ -229,7 +232,7 @@ class VfxEntryController {
     await _backupFiles(files);
 
     for (final file in filesToSave) {
-      final doc = await _prepFile(models, file);
+      final doc = await _prepFile(models, comment, file);
 
       if (doc == null) {
         continue;
@@ -241,10 +244,10 @@ class VfxEntryController {
     return filesToSave.length;
   }
 
-  static Future<int> saveModels(List<VfxEntryModel> models, Directory dir) async {
+  static Future<int> saveModels(List<VfxEntryModel> models, String comment, Directory dir) async {
     final saveRes = await Isolate.run(() async {
       try {
-        return await _saveModels(models, dir);
+        return await _saveModels(models, comment, dir);
       } catch (_) {
         // TODO: Log this when logging is done
         return -1;

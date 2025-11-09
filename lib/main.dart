@@ -17,7 +17,7 @@ void main() async {
 
     final windowOptions = WindowOptions(
       title: "BG3 VFX Helper",
-      minimumSize: Size(570, 350),
+      minimumSize: Size(570, 470),
       size: Size(900, 550),
     );
 

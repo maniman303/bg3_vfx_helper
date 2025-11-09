@@ -5,7 +5,6 @@ Simple tool to automate Baldur's Gate 3 custom head insertion into VFX files.
 <img width="876" height="487" alt="obraz" src="https://github.com/user-attachments/assets/e4804a8a-3054-4a27-80c4-bac541e0e757" />
 
 ### TODO
-- Add comment before adding new entries
 - Logging to file
 - Logging from isolate
 
