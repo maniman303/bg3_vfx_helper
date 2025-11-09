@@ -1,18 +1,14 @@
-import 'dart:io';
-
 import 'package:bg3_vfx_helper/bloc/theme/theme_bloc.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
 import 'package:bg3_vfx_helper/components/button_separator.dart';
 import 'package:bg3_vfx_helper/components/last_wrap.dart';
 import 'package:bg3_vfx_helper/components/list_header.dart';
 import 'package:bg3_vfx_helper/components/lockable_buttons.dart';
 import 'package:bg3_vfx_helper/components/mako_about_dialog.dart';
 import 'package:bg3_vfx_helper/components/material_path_field.dart';
-import 'package:bg3_vfx_helper/components/save_dialog.dart';
-import 'package:bg3_vfx_helper/components/vfx_entry_field.dart';
-import 'package:bg3_vfx_helper/logic/vfx_entry_controller.dart';
-import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
+import 'package:bg3_vfx_helper/components/vfx_entry_list.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,107 +21,39 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _scrollController = ScrollController();
-  final _lsxPathController = TextEditingController();
-  final _entryList = <VfxEntryModel>[VfxEntryModel()];
-
-  String? _lsxPathError;
 
   void _onThemeSwitch(bool value) {
-    final themeNotifier = context.read<ThemeBloc>();
+    final themeBloc = context.read<ThemeBloc>();
 
-    if (themeNotifier.state.selectedTheme == ThemeMode.system) {
-      themeNotifier.changeTheme(
+    if (themeBloc.state.selectedTheme == ThemeMode.system) {
+      themeBloc.changeTheme(
         Theme.brightnessOf(context) == Brightness.dark ? ThemeMode.light : ThemeMode.dark,
       );
     } else {
-      themeNotifier.changeTheme(ThemeMode.system);
+      themeBloc.changeTheme(ThemeMode.system);
     }
   }
 
   void _addEntry() {
-    setState(() {
-      _entryList.add(VfxEntryModel());
-    });
-  }
-
-  void _removeEntry(VfxEntryModel model) {
-    setState(() {
-      _entryList.remove(model);
-    });
+    context.read<VfxBloc>().addModel();
   }
 
   Future<void> _onAbout() async {
     await showDialog(context: context, builder: (context) => MakoAboutDialog());
   }
 
-  void _onPathChanged() {
-    setState(() {
-      _lsxPathError = null;
-    });
-  }
-
   Future<void> _onSave() async {
-    final lsxDirectory = Directory(_lsxPathController.text);
-    if (!await lsxDirectory.exists()) {
-      setState(() {
-        _lsxPathError = "Invalid path to lsx directory.";
-      });
-
-      return;
-    }
-
-    setState(() {
-      _lsxPathError = null;
-    });
-
-    if (!mounted) {
-      return;
-    }
-
-    if (_entryList.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No entries to enter.")));
-      return;
-    }
-
-    final validateRes = VfxEntryController.validateModels(_entryList);
-
-    setState(() {});
-
-    if (!validateRes) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Errors in entries.")));
-      return;
-    }
-
-    showDialog(context: context, barrierDismissible: false, builder: (context) => SaveDialog());
-
-    final saveRes = await VfxEntryController.saveModels(_entryList, lsxDirectory);
-
-    if (!mounted) {
-      return;
-    }
-
-    Navigator.of(context).pop();
-
-    if (saveRes > 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Saved $saveRes files.")));
-    } else if (saveRes == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Nothing to save.")));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Save failed.")));
-    }
+    context.read<VfxBloc>().save();
   }
 
   @override
   void initState() {
     super.initState();
-
-    _lsxPathController.addListener(_onPathChanged);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _lsxPathController.dispose();
 
     super.dispose();
   }
@@ -136,6 +64,7 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(onPressed: _addEntry, child: Icon(Icons.add)),
       body: Scrollbar(
         controller: _scrollController,
+        thumbVisibility: true,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
           child: Column(
@@ -182,15 +111,9 @@ class _HomeState extends State<Home> {
                   alignment: Alignment.topLeft,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: 730),
-                    child: ListView(
-                      controller: _scrollController,
-                      children: [
-                        ListHeader("Settings"),
-                        MaterialPathField(controller: _lsxPathController, errorText: _lsxPathError),
-                        ListHeader("Entries"),
-                        ..._entryList.map((e) => VfxEntryField(model: e, onDelete: () => _removeEntry(e))),
-                        SizedBox(height: 70),
-                      ],
+                    child: VfxEntryList(
+                      scrollController: _scrollController,
+                      headers: [ListHeader("Settings"), MaterialPathField(), ListHeader("Entries")],
                     ),
                   ),
                 ),

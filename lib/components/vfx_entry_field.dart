@@ -1,13 +1,14 @@
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
 import 'package:bg3_vfx_helper/components/lockable_buttons.dart';
 import 'package:bg3_vfx_helper/components/mako_text_field.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class VfxEntryField extends StatefulWidget {
   final VfxEntryModel model;
-  final void Function() onDelete;
 
-  const VfxEntryField({super.key, required this.model, required this.onDelete});
+  const VfxEntryField({super.key, required this.model});
 
   @override
   State<VfxEntryField> createState() => _VfxEntryFieldState();
@@ -16,15 +17,17 @@ class VfxEntryField extends StatefulWidget {
 class _VfxEntryFieldState extends State<VfxEntryField> {
   final _vanillaController = TextEditingController();
   final _customController = TextEditingController();
+  String? _vanillaError;
+  String? _customError;
 
   void _onVanillaChanged() {
     final differs = widget.model.vanillaUUID != _vanillaController.text;
 
     widget.model.vanillaUUID = _vanillaController.text;
 
-    if (widget.model.vanillaError != null && differs) {
+    if (_vanillaError != null && differs) {
       setState(() {
-        widget.model.vanillaError = null;
+        _vanillaError = null;
       });
     }
   }
@@ -34,11 +37,28 @@ class _VfxEntryFieldState extends State<VfxEntryField> {
 
     widget.model.customUUID = _customController.text;
 
-    if (widget.model.customError != null && differs) {
+    if (_customError != null && differs) {
       setState(() {
-        widget.model.customError = null;
+        _customError = null;
       });
     }
+  }
+
+  void _listener(BuildContext context, VfxState state) {
+    final stateModel = state.models.where((m) => m.id == widget.model.id).firstOrNull;
+
+    if (stateModel == null) {
+      return;
+    }
+
+    if (_vanillaError == stateModel.vanillaError && _customError == stateModel.customError) {
+      return;
+    }
+
+    setState(() {
+      _vanillaError = stateModel.vanillaError;
+      _customError = stateModel.customError;
+    });
   }
 
   @override
@@ -59,38 +79,41 @@ class _VfxEntryFieldState extends State<VfxEntryField> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: MakoTextField(
-              controller: _vanillaController,
-              labelText: "Vanilla head UUID",
-              hintText: "________-____-____-__________",
-              errorText: widget.model.vanillaError,
+    return BlocListener<VfxBloc, VfxState>(
+      listener: _listener,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: MakoTextField(
+                controller: _vanillaController,
+                labelText: "Vanilla head UUID",
+                hintText: "________-____-____-__________",
+                errorText: _vanillaError,
+              ),
             ),
-          ),
-          SizedBox(width: 8),
-          Expanded(
-            child: MakoTextField(
-              controller: _customController,
-              labelText: "Custom head UUID",
-              hintText: "________-____-____-__________",
-              errorText: widget.model.customError,
+            SizedBox(width: 8),
+            Expanded(
+              child: MakoTextField(
+                controller: _customController,
+                labelText: "Custom head UUID",
+                hintText: "________-____-____-__________",
+                errorText: _customError,
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: LockableFilledIconButton(
-              onPressed: () async {
-                widget.onDelete();
-              },
-              icon: Icon(Icons.delete_outline),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: LockableFilledIconButton(
+                onPressed: () async {
+                  context.read<VfxBloc>().removeModel(widget.model.id);
+                },
+                icon: Icon(Icons.delete_outline),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

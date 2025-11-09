@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bg3_vfx_helper/bloc/theme/theme_bloc.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
 import 'package:bg3_vfx_helper/looks/no_transition_builder.dart';
 import 'package:bg3_vfx_helper/screens/home.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,10 @@ void main() async {
 
   runApp(
     MultiBlocProvider(
-      providers: [BlocProvider<ThemeBloc>(lazy: false, create: (_) => ThemeBloc())],
+      providers: [
+        BlocProvider<ThemeBloc>(lazy: false, create: (_) => ThemeBloc()),
+        BlocProvider<VfxBloc>(create: (_) => VfxBloc()),
+      ],
       child: const MainApp(),
     ),
   );
@@ -64,7 +68,7 @@ class MainApp extends StatelessWidget {
         iconButtonTheme: IconButtonThemeData(
           style: IconButton.styleFrom(
             padding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
           ),
         ),
         pageTransitionsTheme: PageTransitionsTheme(
@@ -88,7 +92,7 @@ class MainApp extends StatelessWidget {
         iconButtonTheme: IconButtonThemeData(
           style: IconButton.styleFrom(
             padding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
           ),
         ),
         pageTransitionsTheme: PageTransitionsTheme(

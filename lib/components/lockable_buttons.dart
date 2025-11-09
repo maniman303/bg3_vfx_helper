@@ -56,7 +56,7 @@ class _LockableFilledIconButtonState extends State<LockableFilledIconButton> {
       icon: widget.icon,
       padding: EdgeInsets.all(0),
       style: ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.primaryContainer),
+        backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.secondaryContainer),
         fixedSize: WidgetStatePropertyAll(Size(42, height ?? 42)),
       ),
     );
