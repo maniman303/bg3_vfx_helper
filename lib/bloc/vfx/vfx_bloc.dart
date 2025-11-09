@@ -1,8 +1,9 @@
 import 'package:bg3_vfx_helper/bloc/locked_bloc.dart';
-import 'package:bg3_vfx_helper/bloc/vfx/vfx_add_model.dart';
-import 'package:bg3_vfx_helper/bloc/vfx/vfx_remove_model.dart';
-import 'package:bg3_vfx_helper/bloc/vfx/vfx_save.dart';
-import 'package:bg3_vfx_helper/bloc/vfx/vfx_set_lsx_path.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_add_model.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_remove_model.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_save.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_set_lsx_path.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_set_uuid.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
 
 class VfxEvent {
@@ -26,7 +27,15 @@ class VfxBloc extends LockedBloc<VfxEvent, VfxState> {
       (event, emit) => lockedRun(event, emit, VfxHandlerRemoveModel.onRemoveModel, type: "models"),
     );
 
-    on<VfxEventSetLsxPath>((event, emit) => lockedRun(event, emit, VfxHandlerSetLsxPath().onSetLsxPath));
+    on<VfxEventSetLsxPath>((event, emit) => lockedRun(event, emit, VfxHandlerSetLsxPath.onSetLsxPath));
+
+    on<VfxEventSetVanillaUUID>(
+      (event, emit) => lockedRun(event, emit, VfxHandlerSetModelUUID.onSetVanillaUUID),
+    );
+
+    on<VfxEventSetCustomUUID>(
+      (event, emit) => lockedRun(event, emit, VfxHandlerSetModelUUID.onSetCustomUUID),
+    );
 
     on<VfxEventSave>((event, emit) => lockedLimitedRun(event, emit, VfxHandlerSave.onSave));
   }
@@ -41,6 +50,14 @@ class VfxBloc extends LockedBloc<VfxEvent, VfxState> {
 
   void setLsxPath(String lsxPath) {
     add(VfxEventSetLsxPath(lsxPath: lsxPath));
+  }
+
+  void setVanillaUUID(String id, String uuid) {
+    add(VfxEventSetVanillaUUID(id: id, uuid: uuid));
+  }
+
+  void setCustomUUID(String id, String uuid) {
+    add(VfxEventSetCustomUUID(id: id, uuid: uuid));
   }
 
   void save() {

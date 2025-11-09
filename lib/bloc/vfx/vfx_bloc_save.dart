@@ -64,10 +64,10 @@ class VfxHandlerSave {
       return;
     }
 
-    // emit(VfxStateSavingInProgress(lsxPath: lsxPath, models: List.unmodifiable(models)));
+    emit(VfxStateSavingInProgress(lsxPath: lsxPath, models: List.unmodifiable(models)));
 
-    // final saveRes = await VfxEntryController.saveModels(models, lsxDirectory);
+    final saveRes = await VfxEntryController.saveModels(models, lsxDirectory);
 
-    // emit(VfxStateSaveCompleted(lsxPath: lsxPath, models: List.unmodifiable(models), filesSaved: saveRes));
+    emit(VfxStateSaveCompleted(lsxPath: lsxPath, models: List.unmodifiable(models), filesSaved: saveRes));
   }
 }

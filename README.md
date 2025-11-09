@@ -8,7 +8,6 @@ Simple tool to automate Baldur's Gate 3 custom head insertion into VFX files.
 ### TODO
 - Logging to file
 - Logging from isolate
-- (maybe) bloc-ify
 
 ### FAQ
 

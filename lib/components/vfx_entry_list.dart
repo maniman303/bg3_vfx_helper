@@ -1,8 +1,8 @@
 import 'dart:collection';
 
-import 'package:bg3_vfx_helper/bloc/vfx/vfx_add_model.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_add_model.dart';
 import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc.dart';
-import 'package:bg3_vfx_helper/bloc/vfx/vfx_remove_model.dart';
+import 'package:bg3_vfx_helper/bloc/vfx/vfx_bloc_remove_model.dart';
 import 'package:bg3_vfx_helper/components/vfx_entry_field.dart';
 import 'package:bg3_vfx_helper/logic/vfx_entry_model.dart';
 import 'package:flutter/material.dart';

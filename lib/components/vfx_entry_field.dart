@@ -21,27 +21,11 @@ class _VfxEntryFieldState extends State<VfxEntryField> {
   String? _customError;
 
   void _onVanillaChanged() {
-    final differs = widget.model.vanillaUUID != _vanillaController.text;
-
-    widget.model.vanillaUUID = _vanillaController.text;
-
-    if (_vanillaError != null && differs) {
-      setState(() {
-        _vanillaError = null;
-      });
-    }
+    context.read<VfxBloc>().setVanillaUUID(widget.model.id, _vanillaController.text);
   }
 
   void _onCustomChanged() {
-    final differs = widget.model.customUUID != _customController.text;
-
-    widget.model.customUUID = _customController.text;
-
-    if (_customError != null && differs) {
-      setState(() {
-        _customError = null;
-      });
-    }
+    context.read<VfxBloc>().setCustomUUID(widget.model.id, _customController.text);
   }
 
   void _listener(BuildContext context, VfxState state) {
@@ -51,14 +35,18 @@ class _VfxEntryFieldState extends State<VfxEntryField> {
       return;
     }
 
-    if (_vanillaError == stateModel.vanillaError && _customError == stateModel.customError) {
-      return;
+    if (_vanillaController.text != stateModel.vanillaUUID ||
+        _customController.text != stateModel.customUUID) {
+      _vanillaController.text = stateModel.vanillaUUID;
+      _customController.text = stateModel.customUUID;
     }
 
-    setState(() {
-      _vanillaError = stateModel.vanillaError;
-      _customError = stateModel.customError;
-    });
+    if (_vanillaError != stateModel.vanillaError || _customError != stateModel.customError) {
+      setState(() {
+        _vanillaError = stateModel.vanillaError;
+        _customError = stateModel.customError;
+      });
+    }
   }
 
   @override

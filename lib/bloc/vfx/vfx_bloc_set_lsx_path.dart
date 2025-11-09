@@ -13,7 +13,7 @@ class VfxStateSetLsxPath extends VfxState {
 }
 
 class VfxHandlerSetLsxPath {
-  Future<void> onSetLsxPath(
+  static Future<void> onSetLsxPath(
     VfxEventSetLsxPath event,
     VfxState state,
     Emitter<VfxState> emit,
